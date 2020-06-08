@@ -1,0 +1,45 @@
+    // This #include statement was automatically added by the Particle IDE.
+    #include <ThingSpeak.h>
+
+    TCPClient client;
+
+    //declare variables; pin of buzzer & boolean to check alarm status, channel ID and READ apiKey of ThingSpeak Channel
+    int buzzer = D4;
+    bool alarmIsOn= false;
+    unsigned long channelID = 1074964;
+    const char * apiKey = "0I6OMU611T2MT1GT";
+
+    void setup() { 
+        pinMode(buzzer, OUTPUT);
+        ThingSpeak.begin(client); //create connection to ThingSpeak server
+        Particle.function("alarm", alarmSwitch); //create function to check alarm status
+    }
+
+    int alarmSwitch(String command){ //this function checks if the user has activated or deactivate the alarm & updates the boolean value accordingly
+        if (command == "ON" && !alarmIsOn){
+            alarmIsOn = true;
+            Particle.publish("AlarmIsOn", "True");
+        }
+        if (command == "OFF" && alarmIsOn){
+            alarmIsOn = false;
+            Particle.publish("AlarmIsOn", "False");
+        }
+    }
+
+    void buzz(){ //this function signals the buzzer to sound
+        digitalWrite(buzzer, HIGH);
+        delay(14000);
+        digitalWrite(buzzer, LOW);
+        delay(1000);
+    }
+
+    void loop(){
+        if (alarmIsOn){ //only run the following code when the alarm is on
+            int doorStatus = ThingSpeak.readIntField(channelID, 1, apiKey); //read the data from the thingSpeak channel feed, from field 1
+            Particle.publish("value", String(doorStatus));
+          if (doorStatus == 1){ //check if door is Open, if true run the code
+              Particle.publish("doorIsOpen", "True");
+              buzz();
+          }
+        }
+    }
