@@ -1,0 +1,19 @@
+# Laser-Door-Alarm
+LDR SET UP ON RASPBERRY PI:
+https://www.youtube.com/watch?v=dPwW9zmX84E&t=278s
+https://pimylifeup.com/raspberry-pi-light-sensor/
+
+LASER MODULE SET UP ON RASPBERRY PI:
+https://www.youtube.com/watch?v=oLZNYlvHCgQ#:~:text=Step%2D1%3A%20Make%20Connection%20of,GND%20Pin%20of%20Raspberry%20Pi.&text=1.4%3A%20Connect%20LAN%20Cable%20and%20Power%20Cable%20to%20Raspberry%20Pi.
+
+BUZZER SET UP ON PARTICLE
+https://particle.hackster.io/gcolby2/megr-3171-fire-detector-3f176c
+
+Installing Mqtt
+https://www.youtube.com/watch?v=Pb3FLznsdwI
+
+ThingSpeak on RPi
+https://community.thingspeak.com/tutorials/update-a-thingspeak-channel-using-mqtt-on-a-raspberry-pi/
+
+Particle ThingSpeak
+https://github.com/mathworks/thingspeak-particle
