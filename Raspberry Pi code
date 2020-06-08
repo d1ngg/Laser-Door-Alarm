@@ -1,0 +1,54 @@
+    #import required libraries for this project
+    from __future__ import print_function
+    import RPi.GPIO as GPIO
+    import time
+    import paho.mqtt.publish as publish
+    import ssl
+
+    #declare the required variables to establish a connection to upload data to ThingSpeak server, using MQTT client
+    channelID = "1074964"
+    apiKey = "2KY51AODPLTN5ZCC"
+    channel = "channels/" + channelID + "/publish/fields/field1/" + apiKey
+
+    server = "mqtt.thingspeak.com"
+    protocol = "websockets"
+    tls_version = {'ca_certs':"/etc/ssl/certs/ca-certificates.crt",'tls_version':ssl.PROTOCOL_TLSv1}
+    portNum = 443
+
+    #declare the pins that are connected to the LDR and laser diode
+    GPIO.setmode(GPIO.BOARD)
+    ldr = 7
+    laser = 11
+    GPIO.setup(laser, GPIO.OUT)
+    GPIO.output(laser, GPIO.HIGH)
+
+    #since there are no analog pins on raspberry pi, 
+    #I have used the function below which counts the time it takes to recharge the capacitor
+    #the greater the count, the greater the resistance of the LDR, meaning the lower the light intensity
+    def resistance (pin):
+        count = 0
+        #draining the capacitor charge
+        GPIO.setup(pin, GPIO.OUT)
+        GPIO.output(pin, GPIO.LOW)
+        time.sleep(0.1)
+
+        #recharging the capacitor
+        GPIO.setup(pin, GPIO.IN)
+        while (GPIO.input(pin) == GPIO.LOW) and (count < 30000): #we don't want it to count for too long.
+            count += 1
+        return count
+
+    def loop():
+        while True:
+            status = 0
+            var = resistance(ldr)
+            if var == 30000:
+                status = 1
+            print(status)
+            publish.single(channel, payload="{}".format(status), hostname=server, port=portNum, tls=tls_version, transport=protocol)
+    try:
+        loop()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        GPIO.cleanup()  
